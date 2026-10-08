@@ -47,6 +47,7 @@ function AppContent() {
   const calculatedScore = calculateRiskScore(activeIndicators);
 
   // Route matching
+  const isLandingPage = currentRoute === '/' || currentRoute === '';
   const isPeopleRoute = currentRoute.startsWith('/people');
   const isCommunityRoute = currentRoute.startsWith('/community');
   const isDecisionMakerRoute = currentRoute.startsWith('/decision-maker');
@@ -96,8 +97,8 @@ function AppContent() {
         />
       )}
 
-      {/* Conditional Header */}
-      {(!isPeopleRoute && !isCommunityRoute && !isDecisionMakerRoute) && (
+      {/* Conditional Header: DO NOT show Navbar on Landing Page */}
+      {(!isLandingPage && !isPeopleRoute && !isCommunityRoute && !isDecisionMakerRoute) && (
         <Navbar
           activeNav={activeNav}
           setActiveNav={setActiveNav}
@@ -107,7 +108,7 @@ function AppContent() {
       )}
 
       {/* Page Routing */}
-      {(currentRoute === '/' || currentRoute === '') && (
+      {isLandingPage && (
         <LandingHero
           onExplore={() => navigate('/three-levels')}
           onWatchDemo={() => setShowDemoBanner(true)}
@@ -163,14 +164,14 @@ function AppContent() {
             <div className="mb-4 flex items-center justify-between">
               <button
                 onClick={() => navigate('/three-levels')}
-                className="text-xs font-semibold text-[#1769FF] hover:underline flex items-center space-x-1"
+                className="text-xs font-semibold text-[#1769FF] hover:underline flex items-center space-x-1 cursor-pointer"
               >
                 <span>← Back to Three Levels Overview</span>
               </button>
 
               <button
                 onClick={() => setIsCitizenMode(!isCitizenMode)}
-                className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-[#1769FF] border border-blue-200"
+                className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-[#1769FF] border border-blue-200 cursor-pointer"
               >
                 {isCitizenMode ? 'Switch to Authority View' : 'Switch to Citizen View'}
               </button>

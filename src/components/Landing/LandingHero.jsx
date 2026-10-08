@@ -1,185 +1,173 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   ArrowRight, 
-  Play, 
-  User, 
+  Thermometer, 
   Users, 
-  Building2, 
-  X, 
-  Sparkles, 
-  ShieldCheck,
-  Activity,
-  Radio,
-  Bell,
-  Cpu
+  Landmark 
 } from 'lucide-react';
 import { useNinoShield } from '../../context/NinoShieldContext';
 
-export default function LandingHero({ onExplore, onWatchDemo, onGetStarted }) {
-  const { lang, navigate } = useNinoShield();
-  const [showDemoModal, setShowDemoModal] = useState(false);
+export default function LandingHero({ onExplore }) {
+  const { navigate } = useNinoShield();
+
+  const handleExploreClick = () => {
+    if (onExplore) {
+      onExplore();
+    } else {
+      navigate('/three-levels');
+    }
+  };
 
   return (
-    <div className="relative min-h-[calc(100vh-68px)] bg-slate-50 text-slate-900 flex flex-col justify-between overflow-hidden">
+    <div className="relative min-h-screen w-full bg-gradient-to-b from-[#dbeafe] via-[#eff6ff] to-[#ffffff] text-[#0b1736] flex flex-col justify-between overflow-hidden font-sans selection:bg-[#1769FF] selection:text-white">
       
-      {/* Subtle Background Elements */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-100/40 rounded-full blur-3xl pointer-events-none -z-10" />
+      {/* 1. ATMOSPHERIC CLOUDS & SUNSET RAYS BACKGROUND */}
+      {/* Sunburst Glow on Upper Left */}
+      <div className="absolute -top-24 -left-24 w-[700px] h-[700px] bg-radial from-amber-100/70 via-sky-200/40 to-transparent rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="absolute top-1/4 right-0 w-[800px] h-[800px] bg-sky-200/30 rounded-full blur-3xl pointer-events-none z-0" />
 
-      {/* Main Container */}
-      <div className="max-w-7xl w-full mx-auto px-6 lg:px-12 pt-8 lg:pt-12 pb-12 flex-1 flex flex-col justify-between">
+      {/* Atmospheric Soft Clouds on Left & Bottom */}
+      <div 
+        className="absolute inset-0 bg-cover bg-left-bottom opacity-45 pointer-events-none z-0 mix-blend-soft-light"
+        style={{ backgroundImage: `url('/community_landscape.jpg')` }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-0" />
+
+      {/* 2. MAIN HERO CONTAINER */}
+      <div className="relative z-10 max-w-7xl w-full mx-auto px-6 lg:px-12 pt-8 sm:pt-12 pb-6 flex-1 flex flex-col justify-between">
         
-        {/* TWO-COLUMN HERO SECTION */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        {/* TWO-COLUMN GRID: LEFT CONTENT (~52%) | RIGHT EARTH (~48%) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center flex-1 my-auto">
           
-          {/* LEFT HERO: Title, Subtitle, CTAs */}
-          <div className="lg:col-span-6 space-y-6 text-left">
+          {/* LEFT COLUMN: LOGO, HEADLINE, SUBTITLE, EXPLORE BUTTON */}
+          <div className="lg:col-span-6 flex flex-col items-center text-center space-y-6 lg:pr-4">
             
-            {/* BRANDING EYEBROW */}
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold tracking-wide">
-              <span className="w-2 h-2 rounded-full bg-blue-600" />
-              <span>NINOSHIELD CLIMATE INTELLIGENCE</span>
+            {/* CENTERED NINOSHIELD LOGO */}
+            <div className="flex flex-col items-center justify-center cursor-pointer" onClick={handleExploreClick}>
+              <div className="flex items-center space-x-3">
+                {/* Circular Climate / Earth Wave Badge */}
+                <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#1769FF] via-[#00B8C8] to-[#0ea5e9] flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                  <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+                    <path d="M2 12h20"/>
+                    <path d="M12 16c2.5 0 4.5 1.5 6 1.5"/>
+                  </svg>
+                </div>
+
+                <div className="text-3xl font-black tracking-tight flex items-center">
+                  <span className="text-[#0b1736]">Nino</span>
+                  <span className="text-[#1769FF]">Shield</span>
+                </div>
+              </div>
+
+              {/* Horizontal Accent Line below Logo */}
+              <div className="w-12 h-[2px] bg-slate-300 rounded-full mt-2.5" />
             </div>
 
-            {/* MAIN TITLE */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-slate-900">
-              DETECT. PREPARE. ACT.
-            </h1>
+            {/* MAIN HERO HEADLINE */}
+            <div className="space-y-1 max-w-lg mx-auto">
+              <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-extrabold tracking-tight leading-[1.06] text-[#0b1736]">
+                Detect Climate<br />
+                Risks Early.<br />
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#1769FF] via-[#00B8C8] to-[#06b6d4]">
+                  Act Before Disaster.
+                </span>
+              </h1>
+            </div>
 
-            {/* SUBTITLE */}
-            <p className="text-lg sm:text-xl text-slate-600 max-w-[560px] font-medium leading-relaxed">
-              AI-powered early action for El Niño-driven climate risks.
+            {/* SUPPORTING SUBTITLE */}
+            <p className="text-sm sm:text-base text-slate-500 font-medium text-center max-w-md mx-auto leading-relaxed">
+              AI-powered early action for El Niño–driven<br className="hidden sm:inline" /> climate risks.
             </p>
 
-            {/* BUTTONS */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            {/* ONE SINGLE EXPLORE BUTTON */}
+            <div className="pt-2">
               <button
-                onClick={onGetStarted || (() => navigate('/people'))}
-                className="px-6 py-3.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xs transition-all flex items-center space-x-2 cursor-pointer"
+                onClick={handleExploreClick}
+                className="px-10 py-3.5 rounded-full bg-gradient-to-r from-[#1769FF] via-[#1d4ed8] to-[#00B8C8] hover:from-blue-600 hover:to-cyan-500 text-white font-bold text-base shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-[1.03] transition-all flex items-center space-x-2.5 cursor-pointer"
               >
-                <span>Explore NinoShield</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={onExplore || (() => navigate('/three-levels'))}
-                className="px-6 py-3.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 font-bold text-sm border border-slate-200 shadow-xs transition-all flex items-center space-x-2 cursor-pointer"
-              >
-                <span>See How It Works</span>
+                <span>Explore</span>
+                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
 
           </div>
 
-          {/* RIGHT HERO — EARTH VISUAL */}
+          {/* RIGHT COLUMN: HUGE EARTH / EL NIÑO VISUALIZATION (~48% width) */}
           <div className="lg:col-span-6 relative flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[500px] aspect-square flex items-center justify-center">
+            <div className="relative w-full max-w-[560px] aspect-square flex items-center justify-center">
+              
+              {/* Photorealistic Satellite Earth Globe */}
               <img
                 src="/earth_el_nino_globe.jpg"
-                alt="Satellite Earth showing El Niño Climate Signals"
-                className="w-full h-full object-contain drop-shadow-xl rounded-full"
+                alt="Realistic Satellite Earth showing Asia, Australia and Pacific Ocean with El Niño Heatmap"
+                className="w-full h-full object-contain drop-shadow-2xl rounded-full"
               />
 
-              {/* Minimal Clean Indicator Badge */}
-              <div className="absolute bottom-6 left-6 z-20 flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-900/90 text-white text-xs font-semibold backdrop-blur-xs border border-slate-700">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                <span>Active El Niño Signal Monitoring</span>
+              {/* EL NIÑO LABEL BADGE */}
+              <div className="absolute top-[48%] right-[18%] z-20 flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#991b1b]/90 text-white text-[11px] font-black tracking-widest uppercase shadow-2xl border border-red-400/40 backdrop-blur-md">
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                <span>EL NIÑO</span>
               </div>
+
+              {/* HEATMAP PULSE HALO RINGS */}
+              <div className="absolute top-[44%] right-[15%] w-36 h-36 rounded-full border border-red-500/40 animate-ping pointer-events-none" />
+              <div className="absolute top-[46%] right-[16%] w-28 h-28 rounded-full border border-amber-400/30 pointer-events-none" />
+
             </div>
           </div>
 
         </div>
 
-        {/* PRODUCT LOOP BAR */}
-        <div className="my-10 bg-white rounded-xl border border-slate-200 p-4 shadow-xs">
-          <div className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
-            Product Philosophy Loop
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs font-bold text-slate-700">
-            <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-slate-50 border border-slate-100">
-              <Activity className="w-3.5 h-3.5 text-blue-600" />
-              <span>Climate Signals</span>
-            </div>
-            <span className="text-slate-300 font-normal">→</span>
-
-            <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-blue-50 border border-blue-100 text-blue-800">
-              <Cpu className="w-3.5 h-3.5 text-blue-600" />
-              <span>AI Risk Detection</span>
-            </div>
-            <span className="text-slate-300 font-normal">→</span>
-
-            <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-slate-50 border border-slate-100">
-              <Radio className="w-3.5 h-3.5 text-cyan-600" />
-              <span>Local Community Signals</span>
-            </div>
-            <span className="text-slate-300 font-normal">→</span>
-
-            <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-amber-50 border border-amber-100 text-amber-800">
-              <Bell className="w-3.5 h-3.5 text-amber-600" />
-              <span>Early Warning</span>
-            </div>
-            <span className="text-slate-300 font-normal">→</span>
-
-            <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-emerald-50 border border-emerald-100 text-emerald-800">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Early Action</span>
-            </div>
-          </div>
-        </div>
-
-        {/* THREE USER GROUPS CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* 3. THREE BOTTOM FEATURE CARDS (EXACT HORIZONTAL ALIGNMENT) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-6xl w-full mx-auto pt-6 pb-2">
           
-          {/* USER GROUP 1: PEOPLE */}
+          {/* CARD 1: FOR PEOPLE */}
           <div 
             onClick={() => navigate('/people')}
-            className="rounded-xl bg-white border border-slate-200 p-6 shadow-xs hover:border-blue-400 hover:shadow-sm transition-all cursor-pointer group"
+            className="bg-white/95 backdrop-blur-md rounded-2xl border border-white/80 p-5 sm:p-6 shadow-md shadow-blue-900/5 hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer flex items-center space-x-4 group"
           >
-            <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition">
-              <User className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-full bg-red-100/80 text-red-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Thermometer className="w-6 h-6 stroke-[2.2]" />
             </div>
-            <h3 className="text-base font-bold text-slate-900 mb-1">PEOPLE</h3>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-              Understand your risk.
-            </p>
-            <div className="mt-4 flex items-center space-x-1 text-xs font-bold text-blue-600 group-hover:underline">
-              <span>Explore Person Portal</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+            <div>
+              <h3 className="text-base font-extrabold text-[#0b1736]">For People</h3>
+              <p className="text-xs text-slate-500 font-medium leading-snug mt-0.5">
+                Understand your local climate risk and stay safe.
+              </p>
             </div>
           </div>
 
-          {/* USER GROUP 2: COMMUNITIES */}
+          {/* CARD 2: FOR COMMUNITIES */}
           <div 
             onClick={() => navigate('/community')}
-            className="rounded-xl bg-white border border-slate-200 p-6 shadow-xs hover:border-blue-400 hover:shadow-sm transition-all cursor-pointer group"
+            className="bg-white/95 backdrop-blur-md rounded-2xl border border-white/80 p-5 sm:p-6 shadow-md shadow-blue-900/5 hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer flex items-center space-x-4 group"
           >
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition">
-              <Users className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-full bg-blue-100/80 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Users className="w-6 h-6 stroke-[2.2]" />
             </div>
-            <h3 className="text-base font-bold text-slate-900 mb-1">COMMUNITIES</h3>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-              Prepare together.
-            </p>
-            <div className="mt-4 flex items-center space-x-1 text-xs font-bold text-emerald-600 group-hover:underline">
-              <span>Explore Community Portal</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+            <div>
+              <h3 className="text-base font-extrabold text-[#0b1736]">For Communities</h3>
+              <p className="text-xs text-slate-500 font-medium leading-snug mt-0.5">
+                Prepare together for a stronger tomorrow.
+              </p>
             </div>
           </div>
 
-          {/* USER GROUP 3: DECISION-MAKERS */}
+          {/* CARD 3: FOR DECISION-MAKERS */}
           <div 
             onClick={() => navigate('/decision-maker')}
-            className="rounded-xl bg-white border border-slate-200 p-6 shadow-xs hover:border-blue-400 hover:shadow-sm transition-all cursor-pointer group"
+            className="bg-white/95 backdrop-blur-md rounded-2xl border border-white/80 p-5 sm:p-6 shadow-md shadow-blue-900/5 hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer flex items-center space-x-4 group"
           >
-            <div className="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition">
-              <Building2 className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-full bg-emerald-100/80 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Landmark className="w-6 h-6 stroke-[2.2]" />
             </div>
-            <h3 className="text-base font-bold text-slate-900 mb-1">DECISION-MAKERS</h3>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-              Act where it matters most.
-            </p>
-            <div className="mt-4 flex items-center space-x-1 text-xs font-bold text-purple-600 group-hover:underline">
-              <span>Explore Decision-Maker Portal</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+            <div>
+              <h3 className="text-base font-extrabold text-[#0b1736]">For Decision-Makers</h3>
+              <p className="text-xs text-slate-500 font-medium leading-snug mt-0.5">
+                Identify high-risk areas and take early action.
+              </p>
             </div>
           </div>
 
