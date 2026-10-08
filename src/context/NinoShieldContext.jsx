@@ -130,6 +130,67 @@ export function NinoShieldProvider({ children }) {
     }
   }, []);
 
+  // 2C. COMMUNITY PORTAL AUTHENTICATION STATE & LOGOUT
+  const [communityAuth, setCommunityAuth] = useState(() => {
+    const saved = localStorage.getItem('ninoshield_community_auth');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
+
+  const [communityLocationConfirmed, setCommunityLocationConfirmed] = useState(() => {
+    return localStorage.getItem('ninoshield_community_location_confirmed') === 'true';
+  });
+
+  const loginCommunity = (emailOrPhone, password, rememberMe = true) => {
+    const user = {
+      name: emailOrPhone.toLowerCase().includes('demo') ? 'Demo Community Member' : 'Pughal',
+      email: emailOrPhone,
+      community: `${selectedLocation.name} Community`,
+      role: 'Community Representative',
+      avatar: null
+    };
+
+    const authData = { user, authenticated: true, loginTime: new Date().toISOString() };
+    setCommunityAuth(authData);
+
+    if (rememberMe) {
+      localStorage.setItem('ninoshield_community_auth', JSON.stringify(authData));
+    }
+    return { success: true, user };
+  };
+
+  const registerCommunity = ({ fullName, email, password, community }) => {
+    const user = {
+      name: fullName || 'Community Member',
+      email: email || 'community.member@ninoshield.ai',
+      community: community || `${selectedLocation.name} Community`,
+      role: 'Community Representative'
+    };
+
+    const authData = { user, authenticated: true, loginTime: new Date().toISOString() };
+    setCommunityAuth(authData);
+    localStorage.setItem('ninoshield_community_auth', JSON.stringify(authData));
+    return { success: true, user };
+  };
+
+  const logoutCommunity = () => {
+    setCommunityAuth(null);
+    localStorage.removeItem('ninoshield_community_auth');
+    navigate('/community/login');
+  };
+
+  const confirmCommunityLocation = (locationId) => {
+    if (locationId) changeLocation(locationId);
+    setCommunityLocationConfirmed(true);
+    localStorage.setItem('ninoshield_community_location_confirmed', 'true');
+  };
+
   // 3. ROUTING & BROWSER URL SYNC
   const getPathFromHash = () => {
     const hash = window.location.hash.replace('#', '');
@@ -375,6 +436,12 @@ export function NinoShieldProvider({ children }) {
       supportedCrops,
       userGeoStatus,
       requestBrowserLocation,
+      communityAuth,
+      communityLocationConfirmed,
+      loginCommunity,
+      registerCommunity,
+      logoutCommunity,
+      confirmCommunityLocation,
       currentRoute,
       navigate,
       peopleChecklist,

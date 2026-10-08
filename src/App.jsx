@@ -6,6 +6,9 @@ import LandingHero from './components/Landing/LandingHero';
 import ThreeLevelsPage from './components/Landing/ThreeLevelsPage';
 import PeopleDashboard from './components/Citizen/PeopleDashboard';
 import CommunityDashboard from './components/Citizen/CommunityDashboard';
+import CommunityLogin from './components/Community/CommunityLogin';
+import CommunityRegister from './components/Community/CommunityRegister';
+import CommunityLocationSetup from './components/Community/CommunityLocationSetup';
 import DecisionMakerDashboard from './components/Authority/DecisionMakerDashboard';
 import CommandCenter from './components/Dashboard/CommandCenter';
 import RiskMap from './components/Dashboard/RiskMap';
@@ -21,7 +24,7 @@ import GuidedDemoBanner from './components/Demo/GuidedDemoBanner';
 import { calculateRiskScore } from './data/climateData';
 
 function AppContent() {
-  const { currentRoute, navigate, selectedLocation, changeLocation } = useNinoShield();
+  const { currentRoute, navigate, selectedLocation, changeLocation, communityAuth, communityLocationConfirmed } = useNinoShield();
   
   const [activeNav, setActiveNav] = useState('home'); 
   const [activeView, setActiveView] = useState('dashboard');
@@ -97,7 +100,7 @@ function AppContent() {
         />
       )}
 
-      {/* Conditional Header: DO NOT show Navbar on Landing Page */}
+      {/* Conditional Header: DO NOT show Navbar on Landing Page or Portal Routes */}
       {(!isLandingPage && !isPeopleRoute && !isCommunityRoute && !isDecisionMakerRoute) && (
         <Navbar
           activeNav={activeNav}
@@ -127,17 +130,24 @@ function AppContent() {
       {isPeopleRoute && (
         <PeopleDashboard
           onNavigateLanding={() => navigate('/')}
-          onSwitchFarmerMode={() => {
-            alert("Farmer Mode Activated: Displaying specialized crop advisories and irrigation timing.");
-          }}
         />
       )}
 
+      {/* PROTECTED COMMUNITY PORTAL ROUTING */}
       {isCommunityRoute && (
-        <CommunityDashboard
-          onNavigateLanding={() => navigate('/')}
-          onSwitchPersonMode={() => navigate('/people')}
-        />
+        !communityAuth ? (
+          currentRoute === '/community/register' ? (
+            <CommunityRegister />
+          ) : (
+            <CommunityLogin />
+          )
+        ) : !communityLocationConfirmed ? (
+          <CommunityLocationSetup />
+        ) : (
+          <CommunityDashboard
+            onNavigateLanding={() => navigate('/')}
+          />
+        )
       )}
 
       {isDecisionMakerRoute && (
