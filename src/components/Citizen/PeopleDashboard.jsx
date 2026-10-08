@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNinoShield } from '../../context/NinoShieldContext';
 import HeaderBanner from '../Layout/HeaderBanner';
+import FarmerDashboard from './FarmerDashboard';
 import { 
   Home, 
   MapPin, 
@@ -35,6 +36,8 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
     locations,
     selectedLocation,
     changeLocation,
+    isFarmerMode,
+    toggleFarmerMode,
     currentRoute,
     navigate,
     peopleChecklist,
@@ -44,6 +47,11 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
     addReport,
     generateAiRecommendation
   } = useNinoShield();
+
+  // If Farmer Mode is ON, render Farmer Mode UI
+  if (isFarmerMode) {
+    return <FarmerDashboard onNavigateLanding={onNavigateLanding} />;
+  }
 
   // Modals & State
   const [showLocationModal, setShowLocationModal] = useState(false);
@@ -170,7 +178,7 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
 
         {/* Bottom Switch Mode Button */}
         <button
-          onClick={onSwitchFarmerMode}
+          onClick={() => toggleFarmerMode(true)}
           className="w-full flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 transition cursor-pointer"
         >
           <div className="flex items-center space-x-2">

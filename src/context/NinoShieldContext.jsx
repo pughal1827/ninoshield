@@ -29,6 +29,99 @@ export function NinoShieldProvider({ children }) {
     localStorage.setItem('ninoshield_location_id', locId);
   };
 
+  // 2B. FARMER MODE & CROP STATE & GEOLOCATION
+  const [isFarmerMode, setIsFarmerMode] = useState(() => {
+    const saved = localStorage.getItem('ninoshield_farmer_mode');
+    return saved !== null ? saved === 'true' : true; // Default ON for farmer mode
+  });
+
+  const toggleFarmerMode = (overrideVal) => {
+    setIsFarmerMode(prev => {
+      const nextVal = typeof overrideVal === 'boolean' ? overrideVal : !prev;
+      localStorage.setItem('ninoshield_farmer_mode', String(nextVal));
+      return nextVal;
+    });
+  };
+
+  const [selectedCrop, setSelectedCropState] = useState(() => {
+    return localStorage.getItem('ninoshield_farmer_crop') || 'Paddy (Rice)';
+  });
+
+  const changeCrop = (newCrop) => {
+    setSelectedCropState(newCrop);
+    localStorage.setItem('ninoshield_farmer_crop', newCrop);
+  };
+
+  const supportedCrops = [
+    'Paddy (Rice)',
+    'Sugarcane',
+    'Banana',
+    'Cotton',
+    'Groundnut',
+    'Vegetables',
+    'Other'
+  ];
+
+  // Browser Geolocation State
+  const [userGeoStatus, setUserGeoStatus] = useState({
+    active: true,
+    locationText: 'Madurai, Tamil Nadu',
+    isDetecting: false,
+    error: null
+  });
+
+  const requestBrowserLocation = () => {
+    if (!navigator.geolocation) {
+      setUserGeoStatus(prev => ({ ...prev, error: 'Geolocation not supported by browser' }));
+      return;
+    }
+
+    setUserGeoStatus(prev => ({ ...prev, isDetecting: true, error: null }));
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        // Match with closest sample location or set geocoded text
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+          .then(res => res.json())
+          .then(data => {
+            const city = data.address?.city || data.address?.town || data.address?.county || 'Madurai';
+            const state = data.address?.state || 'Tamil Nadu';
+            const locationText = `${city}, ${state}`;
+            
+            setUserGeoStatus({
+              active: true,
+              locationText,
+              isDetecting: false,
+              error: null
+            });
+
+            // Find closest location by name if matching
+            const matchLoc = locations.find(l => l.name.toLowerCase() === city.toLowerCase() || l.district.toLowerCase() === city.toLowerCase());
+            if (matchLoc) {
+              setSelectedLocationId(matchLoc.id);
+            }
+          })
+          .catch(() => {
+            setUserGeoStatus({
+              active: true,
+              locationText: `${latitude.toFixed(2)}°N, ${longitude.toFixed(2)}°E`,
+              isDetecting: false,
+              error: null
+            });
+          });
+      },
+      (err) => {
+        setUserGeoStatus(prev => ({
+          ...prev,
+          isDetecting: false,
+          error: err.message || 'Permission denied'
+        }));
+      },
+      { timeout: 8000 }
+    );
+  };
+
   // Load saved location on init
   useEffect(() => {
     const savedLoc = localStorage.getItem('ninoshield_location_id');
@@ -274,6 +367,14 @@ export function NinoShieldProvider({ children }) {
       selectedLocation,
       selectedLocationId,
       changeLocation,
+      isFarmerMode,
+      setIsFarmerMode,
+      toggleFarmerMode,
+      selectedCrop,
+      changeCrop,
+      supportedCrops,
+      userGeoStatus,
+      requestBrowserLocation,
       currentRoute,
       navigate,
       peopleChecklist,
