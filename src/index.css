@@ -1,0 +1,41 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@layer base {
+  body {
+    background-color: #F7FAFF;
+    color: #0B1736;
+    font-family: 'Inter', 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F7FAFF;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.text-gradient-title {
+  background: linear-gradient(90deg, #1769FF 0%, #00B8C8 50%, #16A878 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.btn-gradient-primary {
+  background: linear-gradient(90deg, #1769FF 0%, #1687FF 100%);
+}
+
+.btn-gradient-header {
+  background: linear-gradient(90deg, #1769FF 0%, #3b82f6 100%);
+}
