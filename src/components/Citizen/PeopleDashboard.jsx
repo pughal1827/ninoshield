@@ -8,35 +8,29 @@ import {
   ShieldCheck, 
   PlusCircle, 
   MessageSquare, 
-  Globe, 
   ChevronRight, 
-  Sun, 
+  Thermometer, 
   CloudRain, 
   Droplets, 
-  Thermometer, 
   AlertTriangle, 
   Calendar, 
-  CheckSquare, 
   Bot, 
-  Megaphone, 
   User, 
   Info, 
   X, 
-  Send, 
   Leaf, 
-  ChevronDown,
-  Shield,
-  Users,
-  Camera,
-  CheckCircle2,
-  Clock,
-  ArrowLeft
+  Shield, 
+  Users, 
+  Camera, 
+  CheckCircle2, 
+  ArrowLeft,
+  Activity,
+  HelpCircle
 } from 'lucide-react';
 
 export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode }) {
   const {
     lang,
-    toggleLanguage,
     t,
     locations,
     selectedLocation,
@@ -63,7 +57,7 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
   const [reportDescription, setReportDescription] = useState('');
   const [reportSuccess, setReportSuccess] = useState(false);
 
-  // Determine Sub-Page Route
+  // Sub-Page Routes
   const isAlertsPage = currentRoute === '/people/alerts';
   const isPreparePage = currentRoute === '/people/prepare';
   const isReportPage = currentRoute === '/people/report';
@@ -74,7 +68,7 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
       category,
       locationId: selectedLocation.id,
       locationName: selectedLocation.name,
-      description: reportDescription || `${category} reported by local citizen in ${selectedLocation.name}`,
+      description: reportDescription || `${category} reported by citizen in ${selectedLocation.name}`,
     });
 
     setReportSuccess(true);
@@ -83,39 +77,49 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
       setShowReportModal(false);
       setReportDescription('');
       navigate('/people');
-    }, 1800);
+    }, 1500);
   };
 
   const handleAskAiSubmit = (qText) => {
-    const query = qText || aiQuestion || "How is the heat today?";
+    const query = qText || aiQuestion || "How is the climate risk today?";
     const result = generateAiRecommendation(selectedLocation, query);
     setAiAnalysis(result);
     setShowAiModal(true);
   };
 
+  // Human-readable risk status
+  const getRiskLabel = (score) => {
+    if (score >= 80) return { text: lang === 'ta' ? 'கடுமையான அபாயம்' : 'CRITICAL', color: 'bg-red-600 text-white', border: 'border-red-600' };
+    if (score >= 70) return { text: lang === 'ta' ? 'அதிக அபாயம்' : 'HIGH', color: 'bg-red-500 text-white', border: 'border-red-500' };
+    if (score >= 50) return { text: lang === 'ta' ? 'மிதமான அபாயம்' : 'MODERATE', color: 'bg-amber-500 text-white', border: 'border-amber-500' };
+    return { text: lang === 'ta' ? 'குறைந்த அபாயம்' : 'LOW', color: 'bg-emerald-600 text-white', border: 'border-emerald-600' };
+  };
+
+  const riskBadge = getRiskLabel(selectedLocation.overallRisk);
+
   return (
-    <div className="min-h-screen bg-[#F7FAFF] text-[#0B1736] font-sans flex">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex">
       
       {/* 1. LEFT SIDEBAR NAVIGATION */}
-      <aside className="w-64 bg-white border-r border-blue-100 p-5 flex flex-col justify-between shrink-0 hidden lg:flex sticky top-0 h-screen">
+      <aside className="w-64 bg-white border-r border-slate-200 p-5 flex flex-col justify-between shrink-0 hidden lg:flex sticky top-0 h-screen">
         <div className="space-y-6">
           
           {/* Logo Header */}
           <div className="flex items-center space-x-3 cursor-pointer" onClick={onNavigateLanding}>
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#1769FF] to-[#00B8C8] flex items-center justify-center text-white shadow-md">
+            <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs">
               <Shield className="w-5 h-5" />
             </div>
             <div>
-              <div className="font-extrabold text-lg text-[#0B1736] tracking-tight">NinoShield</div>
-              <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">AI-Powered El Niño Early Action</div>
+              <div className="font-extrabold text-base text-slate-900 tracking-tight">NinoShield</div>
+              <div className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">People Portal</div>
             </div>
           </div>
 
-          {/* Navigation Items */}
-          <nav className="space-y-1.5 text-xs font-bold">
+          {/* Clean Navigation Items */}
+          <nav className="space-y-1 text-xs font-semibold">
             <button
               onClick={() => navigate('/people')}
-              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl transition ${isMainDashboard ? 'bg-[#EBF3FF] text-[#1769FF]' : 'text-slate-600 hover:bg-slate-50'}`}
+              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg transition cursor-pointer ${isMainDashboard ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
             >
               <Home className="w-4 h-4" />
               <span>{t.home || "Home"}</span>
@@ -123,15 +127,15 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
 
             <button
               onClick={() => setShowLocationModal(true)}
-              className="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-slate-50 transition"
+              className="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition cursor-pointer"
             >
-              <MapPin className="w-4 h-4" />
+              <MapPin className="w-4 h-4 text-blue-600" />
               <span>My Area ({selectedLocation.name})</span>
             </button>
 
             <button
               onClick={() => navigate('/people/alerts')}
-              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl transition ${isAlertsPage ? 'bg-[#EBF3FF] text-[#1769FF]' : 'text-slate-600 hover:bg-slate-50'}`}
+              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg transition cursor-pointer ${isAlertsPage ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
             >
               <Bell className="w-4 h-4" />
               <span>{t.alerts || "Alerts"}</span>
@@ -139,7 +143,7 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
 
             <button
               onClick={() => navigate('/people/prepare')}
-              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl transition ${isPreparePage ? 'bg-[#EBF3FF] text-[#1769FF]' : 'text-slate-600 hover:bg-slate-50'}`}
+              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg transition cursor-pointer ${isPreparePage ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
             >
               <ShieldCheck className="w-4 h-4" />
               <span>{t.prepare || "Prepare"}</span>
@@ -147,7 +151,7 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
 
             <button
               onClick={() => navigate('/people/report')}
-              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl transition ${isReportPage ? 'bg-[#EBF3FF] text-[#1769FF]' : 'text-slate-600 hover:bg-slate-50'}`}
+              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg transition cursor-pointer ${isReportPage ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
             >
               <PlusCircle className="w-4 h-4" />
               <span>{t.report || "Report"}</span>
@@ -155,7 +159,7 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
 
             <button
               onClick={() => handleAskAiSubmit("Climate guidance for " + selectedLocation.name)}
-              className="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-slate-50 transition"
+              className="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition cursor-pointer"
             >
               <MessageSquare className="w-4 h-4" />
               <span>{t.askAi || "Ask AI"}</span>
@@ -167,7 +171,7 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
         {/* Bottom Switch Mode Button */}
         <button
           onClick={onSwitchFarmerMode}
-          className="w-full flex items-center justify-between p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition shadow-xs"
+          className="w-full flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 transition cursor-pointer"
         >
           <div className="flex items-center space-x-2">
             <Leaf className="w-4 h-4 text-emerald-600" />
@@ -178,191 +182,164 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
       </aside>
 
       {/* 2. MAIN VIEW AREA */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-7xl mx-auto space-y-6">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-6xl mx-auto space-y-6">
 
         {/* HEADER BANNER */}
         <HeaderBanner
-          title="Good morning!"
-          subtitle="Stay informed. Stay prepared."
+          title={lang === 'ta' ? 'வணக்கம்!' : 'Good morning!'}
+          subtitle={lang === 'ta' ? 'உங்கள் பகுதியின் காலநிலை அபாயத்தை அறிந்து பாதுகாப்பாக தயாராகுங்கள்.' : 'Understand your local risk and know what action to take.'}
           mode="people"
           onOpenLocationModal={() => setShowLocationModal(true)}
         />
 
+        {/* PRIMARY QUESTION BANNER */}
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <HelpCircle className="w-5 h-5 text-blue-600 shrink-0" />
+            <div>
+              <div className="text-xs text-blue-600 font-bold uppercase tracking-wider">Primary Question</div>
+              <h2 className="text-base sm:text-lg font-black text-slate-900">
+                "Am I at risk, and what should I do?"
+              </h2>
+            </div>
+          </div>
+          <span className="hidden sm:inline-block text-xs font-semibold px-3 py-1 bg-white rounded-md border border-blue-200 text-blue-800">
+            {selectedLocation.name} Zone
+          </span>
+        </div>
+
         {/* SEPARATE DEDICATED SUB-PAGES */}
         {isAlertsPage ? (
-          /* SEPARATE PAGE: ALERTS & ADVISORIES */
-          <div className="space-y-6">
+          /* SUB-PAGE: ALERTS */
+          <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <button onClick={() => navigate('/people')} className="p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">
+              <button onClick={() => navigate('/people')} className="p-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer">
                 <ArrowLeft className="w-4 h-4" />
               </button>
-              <h2 className="text-xl font-black text-[#0B1736]">Personal Safety Alerts & Advisories</h2>
+              <h2 className="text-lg font-extrabold text-slate-900">Safety Alerts & Advisories</h2>
             </div>
 
-            <div className="bg-[#FFFBF0] rounded-3xl p-6 border border-amber-200 shadow-xs space-y-4">
+            <div className="bg-amber-50 rounded-xl p-5 border border-amber-200 space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2 text-amber-800 font-extrabold text-base">
-                  <AlertTriangle className="w-5 h-5 text-amber-600" />
-                  <span>CRITICAL WATER STRESS & HEATWAVE ADVISORY — {selectedLocation.name}</span>
+                <div className="flex items-center space-x-2 text-amber-900 font-bold text-sm">
+                  <AlertTriangle className="w-4 h-4 text-amber-600" />
+                  <span>WATER STRESS & HEAT ADVISORY — {selectedLocation.name}</span>
                 </div>
-                <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-900 font-bold text-xs">
-                  Active Issue Date: 1 Oct 2026
+                <span className="px-2.5 py-0.5 rounded bg-amber-200 text-amber-900 font-semibold text-xs">
+                  Active Notice
                 </span>
               </div>
 
-              <p className="text-sm text-slate-700 leading-relaxed font-medium">
-                Water storage in local reservoirs is down by {selectedLocation.anomalies.waterAvailability} while daily temperatures remain {selectedLocation.anomalies.tempAnomaly} above normal. High risk of thermal stress for outdoor laborers and elderly citizens.
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                Water availability is decreasing in local reservoirs while daily temperatures remain {selectedLocation.anomalies.tempAnomaly} above normal.
               </p>
 
-              <div className="bg-amber-100/70 rounded-2xl p-4 border border-amber-200 space-y-2 text-xs font-semibold text-amber-900">
-                <div className="font-extrabold text-sm">Recommended Citizen Safety Actions:</div>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Store at least 3 days of essential drinking water for household needs.</li>
-                  <li>Avoid direct outdoor work between 11:00 AM and 3:00 PM.</li>
-                  <li>Ensure elderly family members remain in shaded, ventilated areas.</li>
-                  <li>Follow official municipal water supply distribution announcements.</li>
+              <div className="bg-white rounded-lg p-3 border border-amber-200 space-y-1.5 text-xs text-slate-800 font-medium">
+                <div className="font-bold text-slate-900">What you can do:</div>
+                <ul className="list-disc list-inside space-y-1 text-slate-700">
+                  <li>Store clean drinking water for household needs.</li>
+                  <li>Avoid direct outdoor activity during peak afternoon heat (12 PM - 3 PM).</li>
+                  <li>Check on elderly family members and neighbors.</li>
                 </ul>
               </div>
             </div>
           </div>
         ) : isPreparePage ? (
-          /* SEPARATE PAGE: PREPAREDNESS CHECKLIST */
-          <div className="space-y-6">
+          /* SUB-PAGE: PREPARE CHECKLIST */
+          <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <button onClick={() => navigate('/people')} className="p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">
+              <button onClick={() => navigate('/people')} className="p-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer">
                 <ArrowLeft className="w-4 h-4" />
               </button>
-              <h2 className="text-xl font-black text-[#0B1736]">Personal Safety Preparedness Checklist</h2>
+              <h2 className="text-lg font-extrabold text-slate-900">Household Readiness Checklist</h2>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div className="bg-white rounded-xl p-5 border border-slate-200 space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
-                  <div className="text-base font-extrabold text-[#0B1736]">Household Readiness Rating</div>
-                  <p className="text-xs text-slate-500">Check completed items to increase your preparedness score.</p>
+                  <div className="text-sm font-bold text-slate-900">Preparedness Rating</div>
+                  <p className="text-xs text-slate-500">Check completed items to improve your household readiness.</p>
                 </div>
-                <div className="text-2xl font-black text-emerald-600 bg-emerald-50 px-4 py-2 rounded-2xl border border-emerald-200">
+                <div className="text-lg font-black text-emerald-700 bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-200">
                   {preparedCount} / {totalPreparedCount} Prepared
                 </div>
               </div>
 
-              <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                <div className="bg-emerald-500 h-full transition-all duration-500" style={{ width: `${(preparedCount/totalPreparedCount)*100}%` }}></div>
+              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div className="bg-emerald-600 h-full transition-all duration-300" style={{ width: `${(preparedCount/totalPreparedCount)*100}%` }} />
               </div>
 
-              <div className="space-y-3 text-xs font-semibold">
-                <label className="flex items-center space-x-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100 transition">
-                  <input
-                    type="checkbox"
-                    checked={peopleChecklist.water}
-                    onChange={() => togglePeopleChecklist('water')}
-                    className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500"
-                  />
-                  <div>
-                    <div className="text-sm font-bold text-[#0B1736]">Drinking water available</div>
-                    <div className="text-slate-500 font-normal">Stored clean drinking water for all family members (min 15 liters).</div>
-                  </div>
-                </label>
-
-                <label className="flex items-center space-x-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100 transition">
-                  <input
-                    type="checkbox"
-                    checked={peopleChecklist.medicines}
-                    onChange={() => togglePeopleChecklist('medicines')}
-                    className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500"
-                  />
-                  <div>
-                    <div className="text-sm font-bold text-[#0B1736]">Important medicines ready</div>
-                    <div className="text-slate-500 font-normal">First aid kit, ORS hydration packets, and prescription medications.</div>
-                  </div>
-                </label>
-
-                <label className="flex items-center space-x-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100 transition">
-                  <input
-                    type="checkbox"
-                    checked={peopleChecklist.contacts}
-                    onChange={() => togglePeopleChecklist('contacts')}
-                    className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500"
-                  />
-                  <div>
-                    <div className="text-sm font-bold text-[#0B1736]">Emergency contacts saved</div>
-                    <div className="text-slate-500 font-normal">District helpline (1077), health center, and local water officer saved on phone.</div>
-                  </div>
-                </label>
-
-                <label className="flex items-center space-x-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100 transition">
-                  <input
-                    type="checkbox"
-                    checked={peopleChecklist.powerbank}
-                    onChange={() => togglePeopleChecklist('powerbank')}
-                    className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500"
-                  />
-                  <div>
-                    <div className="text-sm font-bold text-[#0B1736]">Power bank charged</div>
-                    <div className="text-slate-500 font-normal">Mobile device and backup battery charged for severe weather alerts.</div>
-                  </div>
-                </label>
-
-                <label className="flex items-center space-x-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100 transition">
-                  <input
-                    type="checkbox"
-                    checked={peopleChecklist.info}
-                    onChange={() => togglePeopleChecklist('info')}
-                    className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500"
-                  />
-                  <div>
-                    <div className="text-sm font-bold text-[#0B1736]">Local emergency information saved</div>
-                    <div className="text-slate-500 font-normal">Location of nearest safe shelter and hydration center identified.</div>
-                  </div>
-                </label>
+              <div className="space-y-2.5 text-xs">
+                {[
+                  { key: 'water', label: 'Drinking water available', desc: 'Stored clean drinking water for essential household needs.' },
+                  { key: 'medicines', label: 'Important medicines ready', desc: 'First aid kit and basic emergency medications.' },
+                  { key: 'contacts', label: 'Emergency contacts saved', desc: 'District helpline (1077) and local health center numbers.' },
+                  { key: 'powerbank', label: 'Power bank charged', desc: 'Mobile phone charged for weather advisories.' },
+                  { key: 'info', label: 'Local safe shelter info saved', desc: 'Identified nearest hydration and community relief location.' },
+                ].map(item => (
+                  <label key={item.key} className="flex items-start space-x-3 p-3 rounded-lg bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100 transition">
+                    <input
+                      type="checkbox"
+                      checked={peopleChecklist[item.key]}
+                      onChange={() => togglePeopleChecklist(item.key)}
+                      className="w-4 h-4 text-emerald-600 rounded mt-0.5 focus:ring-emerald-500"
+                    />
+                    <div>
+                      <div className="font-bold text-slate-900">{item.label}</div>
+                      <div className="text-slate-500 font-normal">{item.desc}</div>
+                    </div>
+                  </label>
+                ))}
               </div>
             </div>
           </div>
         ) : isReportPage ? (
-          /* SEPARATE PAGE: SUBMIT OBSERVATION */
-          <div className="space-y-6 max-w-2xl mx-auto">
+          /* SUB-PAGE: REPORT ISSUE */
+          <div className="space-y-4 max-w-xl mx-auto">
             <div className="flex items-center space-x-3">
-              <button onClick={() => navigate('/people')} className="p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">
+              <button onClick={() => navigate('/people')} className="p-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer">
                 <ArrowLeft className="w-4 h-4" />
               </button>
-              <h2 className="text-xl font-black text-[#0B1736]">Submit Climate Observation</h2>
+              <h2 className="text-lg font-extrabold text-slate-900">Report an Issue</h2>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 border border-blue-100 shadow-xs space-y-4">
-              <p className="text-xs text-slate-500">
-                Sharing what you observe in your area helps update local climate signal intelligence for your community and district decision-makers.
+            <div className="bg-white rounded-xl p-5 border border-slate-200 space-y-4">
+              <p className="text-xs text-slate-600">
+                Reporting what you observe in your area helps alert community members and district decision-makers.
               </p>
 
               {reportSuccess ? (
-                <div className="p-8 bg-emerald-50 rounded-2xl border border-emerald-200 text-center space-y-3 text-emerald-900">
-                  <div className="text-3xl">✅</div>
-                  <div className="font-extrabold text-base">Observation Submitted Successfully!</div>
-                  <p className="text-xs">Your report has been added to the local climate signal feed.</p>
+                <div className="p-6 bg-emerald-50 rounded-lg border border-emerald-200 text-center space-y-2 text-emerald-900">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
+                  <div className="font-bold text-sm">Report Submitted Successfully</div>
+                  <p className="text-xs text-slate-600">Your observation has been logged in community signal intelligence.</p>
                 </div>
               ) : (
                 <form onSubmit={(e) => { e.preventDefault(); handleReportSubmit(); }} className="space-y-4 text-xs font-semibold">
                   <div>
-                    <label className="block font-extrabold text-slate-700 mb-1.5">Observation Category</label>
+                    <label className="block font-bold text-slate-800 mb-1">Issue Category</label>
                     <select
                       value={reportCategory}
                       onChange={(e) => setReportCategory(e.target.value)}
-                      className="w-full p-3 rounded-2xl border border-slate-200 bg-slate-50 text-slate-900 outline-none focus:ring-2 focus:ring-[#1769FF]"
+                      className="w-full p-2.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 outline-none focus:ring-2 focus:ring-blue-600"
                     >
-                      <option value="Water Shortage">💧 Water Shortage</option>
-                      <option value="Extreme Heat">🌡️ Extreme Heat</option>
-                      <option value="Crop Problem">🌾 Crop Stress / Problem</option>
-                      <option value="Heavy Rainfall">🌧️ Heavy Rainfall / Runoff</option>
+                      <option value="Water Shortage">Water Shortage</option>
+                      <option value="Extreme Heat">Extreme Heat</option>
+                      <option value="Crop Problem">Crop Problem</option>
+                      <option value="Heavy Rainfall">Heavy Rainfall</option>
+                      <option value="Flooding">Flooding</option>
+                      <option value="Other">Other</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block font-extrabold text-slate-700 mb-1.5">Location & Details</label>
+                    <label className="block font-bold text-slate-800 mb-1">Description & Location Details</label>
                     <textarea
-                      rows={4}
+                      rows={3}
                       value={reportDescription}
                       onChange={(e) => setReportDescription(e.target.value)}
-                      placeholder="Describe what you observed in detail (e.g. Ward 4 municipal tap dry for 2 consecutive days)..."
-                      className="w-full p-3 rounded-2xl border border-slate-200 bg-slate-50 outline-none focus:ring-2 focus:ring-[#1769FF]"
+                      placeholder="Describe what you observed (e.g. Ward 4 municipal tap dry for 2 consecutive days)..."
+                      className="w-full p-2.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 outline-none focus:ring-2 focus:ring-blue-600"
                     />
                   </div>
 
@@ -370,13 +347,13 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
                     <button
                       type="button"
                       onClick={() => navigate('/people')}
-                      className="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold"
+                      className="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-semibold cursor-pointer"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="px-5 py-2.5 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition shadow-sm"
+                      className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition cursor-pointer"
                     >
                       Submit Report
                     </button>
@@ -386,370 +363,283 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
             </div>
           </div>
         ) : (
-          /* DEFAULT: FULL MAIN OVERVIEW DASHBOARD MATCHING REFERENCE IMAGE 1:1 */
-          <>
-            {/* ROW 1: TOP 3 CARDS */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              
-              {/* CARD 1: TODAY'S CLIMATE STATUS */}
-              <div className="lg:col-span-5 bg-[#FFF5F5] rounded-3xl p-5 border border-red-100 shadow-xs space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-red-500">⚙️</span>
-                    <h3 className="font-extrabold text-sm text-[#0B1736]">Today's Climate Status ⓘ</h3>
-                  </div>
-                  <button
-                    onClick={() => setShowSourceModal(true)}
-                    className="px-2.5 py-1 rounded-full bg-blue-50 text-[#1769FF] border border-blue-200 text-[11px] font-bold hover:bg-blue-100 transition"
-                  >
-                    Source &gt;
-                  </button>
+          /* MAIN SIMPLE PEOPLE DASHBOARD */
+          <div className="space-y-6">
+            
+            {/* 1. YOUR AREA RIGHT NOW */}
+            <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center space-x-2">
+                  <Activity className="w-4 h-4 text-blue-600" />
+                  <h3 className="font-extrabold text-sm text-slate-900">YOUR AREA RIGHT NOW</h3>
                 </div>
-
-                <div className="flex items-center space-x-4 pt-1">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-amber-400 to-red-500 flex items-center justify-center text-white text-2xl shadow-md shrink-0">
-                    ☀️
-                  </div>
-                  <div>
-                    <div className="text-2xl font-black text-red-600 tracking-tight">HIGH RISK</div>
-                    <p className="text-xs text-slate-600 font-medium leading-snug">
-                      High heat and low rainfall conditions are affecting your area.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="bg-white/80 backdrop-blur-xs rounded-2xl p-3.5 border border-red-100 space-y-2">
-                  <div className="text-xs font-extrabold text-[#0B1736]">Why is the risk high? ⓘ</div>
-                  <div className="grid grid-cols-3 gap-2 text-[11px]">
-                    <div>
-                      <div className="text-slate-400 font-bold">Temperature</div>
-                      <div className="font-extrabold text-red-600">Above normal</div>
-                      <div className="font-bold text-slate-700">{selectedLocation.anomalies.tempAnomaly}</div>
-                    </div>
-                    <div>
-                      <div className="text-slate-400 font-bold">Rainfall</div>
-                      <div className="font-extrabold text-red-600">Below normal</div>
-                      <div className="font-bold text-slate-700">{selectedLocation.anomalies.rainAnomaly}</div>
-                    </div>
-                    <div>
-                      <div className="text-slate-400 font-bold">Water availability</div>
-                      <div className="font-extrabold text-red-600">Decreasing</div>
-                      <div className="font-bold text-slate-700">{selectedLocation.anomalies.waterAvailability}</div>
-                    </div>
-                  </div>
-                </div>
+                <span className={`px-3 py-1 rounded-md text-xs font-black tracking-wider ${riskBadge.color}`}>
+                  {riskBadge.text}
+                </span>
               </div>
 
-              {/* CARD 2: CURRENT ALERT */}
-              <div className="lg:col-span-3 bg-[#FFFBF0] rounded-3xl p-5 border border-amber-200/80 shadow-xs flex flex-col justify-between space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200">
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-1.5 text-amber-700 font-bold text-xs">
-                      <AlertTriangle className="w-4 h-4 text-amber-500" />
-                      <span>Current Alert</span>
-                    </div>
-                    <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold border border-amber-200">
-                      ● Monitoring
-                    </span>
-                  </div>
-
-                  <div className="font-black text-sm text-[#0B1736] leading-snug pt-1">
-                    Water availability may decrease in the coming days.
-                  </div>
-                  <p className="text-xs text-slate-600 pt-1 leading-relaxed">
-                    Prepare water for essential needs and follow local advisories.
+                  <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">Current Status</div>
+                  <p className="text-sm sm:text-base font-bold text-slate-900 mt-0.5">
+                    Temperature is above normal and rainfall is below normal.
+                  </p>
+                  <p className="text-xs text-slate-600 mt-1">
+                    Water availability in {selectedLocation.name} is decreasing gradually.
                   </p>
                 </div>
-
+                
                 <button
-                  onClick={() => navigate('/people/alerts')}
-                  className="w-full flex items-center justify-between text-xs font-bold text-amber-800 hover:underline pt-2"
+                  onClick={() => setShowSourceModal(true)}
+                  className="px-3.5 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-blue-600 hover:bg-blue-50 transition shrink-0 cursor-pointer"
                 >
-                  <span>View full advisory details</span>
-                  <ChevronRight className="w-4 h-4" />
+                  Source & Explanation →
                 </button>
               </div>
-
-              {/* CARD 3: NEXT FEW DAYS */}
-              <div className="lg:col-span-4 bg-white rounded-3xl p-5 border border-blue-100 shadow-xs space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <div className="flex items-center space-x-1.5 text-[#0B1736] font-bold text-xs">
-                    <Calendar className="w-4 h-4 text-[#1769FF]" />
-                    <span>Next Few Days</span>
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-bold">Based on climate signals ⓘ</span>
-                </div>
-
-                <div className="grid grid-cols-4 gap-2 text-center text-xs pt-1">
-                  <div className="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 space-y-1">
-                    <div className="text-[10px] text-slate-400 font-bold">Today</div>
-                    <div className="text-base">☀️</div>
-                    <div className="font-black text-red-600">Hot</div>
-                  </div>
-
-                  <div className="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 space-y-1">
-                    <div className="text-[10px] text-slate-400 font-bold">Tomorrow</div>
-                    <div className="text-base">☀️</div>
-                    <div className="font-black text-red-600">Very Hot</div>
-                  </div>
-
-                  <div className="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 space-y-1">
-                    <div className="text-[10px] text-slate-400 font-bold">Next 3 Days</div>
-                    <div className="text-base">💧</div>
-                    <div className="font-bold text-blue-600 text-[10px] leading-tight">Water stress may increase</div>
-                  </div>
-
-                  <div className="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 space-y-1">
-                    <div className="text-[10px] text-slate-400 font-bold">Next 7 Days</div>
-                    <div className="text-base">🌧️</div>
-                    <div className="font-bold text-blue-600 text-[10px] leading-tight">Rainfall below normal</div>
-                  </div>
-                </div>
-              </div>
-
             </div>
 
-            {/* ROW 2: MIDDLE 3-COLUMN GRID */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* 2. WHY? (KEY DRIVERS) */}
+            <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="font-extrabold text-sm text-slate-900">WHY IS THERE A RISK?</h3>
+                <span className="text-xs text-slate-500 font-medium">4 Key Drivers</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                
+                {/* Driver 1: Temperature */}
+                <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                  <div className="flex items-center justify-between font-bold text-slate-500">
+                    <span>Temperature</span>
+                    <Thermometer className="w-4 h-4 text-red-500" />
+                  </div>
+                  <div className="text-sm font-black text-red-600">Above normal</div>
+                  <div className="text-[11px] text-slate-600">{selectedLocation.anomalies.tempAnomaly}</div>
+                </div>
+
+                {/* Driver 2: Rainfall */}
+                <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                  <div className="flex items-center justify-between font-bold text-slate-500">
+                    <span>Rainfall</span>
+                    <CloudRain className="w-4 h-4 text-amber-500" />
+                  </div>
+                  <div className="text-sm font-black text-amber-600">Below normal</div>
+                  <div className="text-[11px] text-slate-600">{selectedLocation.anomalies.rainAnomaly}</div>
+                </div>
+
+                {/* Driver 3: Water Availability */}
+                <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                  <div className="flex items-center justify-between font-bold text-slate-500">
+                    <span>Water availability</span>
+                    <Droplets className="w-4 h-4 text-blue-500" />
+                  </div>
+                  <div className="text-sm font-black text-blue-600">Decreasing</div>
+                  <div className="text-[11px] text-slate-600">{selectedLocation.anomalies.waterAvailability}</div>
+                </div>
+
+                {/* Driver 4: El Niño Signal */}
+                <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                  <div className="flex items-center justify-between font-bold text-slate-500">
+                    <span>El Niño Signal</span>
+                    <Activity className="w-4 h-4 text-purple-500" />
+                  </div>
+                  <div className="text-sm font-black text-purple-600">{selectedLocation.elNinoStatus}</div>
+                  <div className="text-[11px] text-slate-600">Pacific Anomaly Active</div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* 3. WHAT YOU SHOULD KNOW (CURRENT ALERT) */}
+            <div className="bg-amber-50 rounded-xl p-5 border border-amber-200 shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2 text-amber-900 font-bold text-xs uppercase tracking-wider">
+                  <AlertTriangle className="w-4 h-4 text-amber-600" />
+                  <span>WHAT YOU SHOULD KNOW</span>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-200 text-amber-900">
+                  Current Notice
+                </span>
+              </div>
+
+              <div className="text-sm font-bold text-slate-900">
+                Water availability may decrease in the coming days due to low rainfall.
+              </div>
+              <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                Store essential water for family needs and avoid wasting water for non-essential activities.
+              </p>
+            </div>
+
+            {/* 4. WHAT YOU CAN DO (RECOMMENDATIONS) */}
+            <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="font-extrabold text-sm text-slate-900">WHAT YOU CAN DO</h3>
+                <span className="text-xs text-slate-500 font-medium">Actionable Safety Steps</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                
+                <div onClick={() => handleAskAiSubmit("Conserve water tips")} className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 hover:bg-blue-50/50 hover:border-blue-200 transition cursor-pointer flex items-start justify-between">
+                  <div>
+                    <div className="font-bold text-slate-900">Conserve Water</div>
+                    <p className="text-slate-600 text-[11px] mt-0.5">Store drinking water and minimize non-essential usage.</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                </div>
+
+                <div onClick={() => handleAskAiSubmit("Avoid heat tips")} className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 hover:bg-amber-50/50 hover:border-amber-200 transition cursor-pointer flex items-start justify-between">
+                  <div>
+                    <div className="font-bold text-slate-900">Avoid Peak Afternoon Heat</div>
+                    <p className="text-slate-600 text-[11px] mt-0.5">Avoid direct outdoor work between 12 PM and 3 PM.</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                </div>
+
+                <div onClick={() => handleAskAiSubmit("Farming advisory")} className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 hover:bg-emerald-50/50 hover:border-emerald-200 transition cursor-pointer flex items-start justify-between">
+                  <div>
+                    <div className="font-bold text-slate-900">Follow Farming Advisory</div>
+                    <p className="text-slate-600 text-[11px] mt-0.5">Adjust irrigation schedules according to local rainfall forecasts.</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                </div>
+
+                <div onClick={() => handleAskAiSubmit("Check on vulnerable people")} className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 hover:bg-purple-50/50 hover:border-purple-200 transition cursor-pointer flex items-start justify-between">
+                  <div>
+                    <div className="font-bold text-slate-900">Check on Vulnerable People</div>
+                    <p className="text-slate-600 text-[11px] mt-0.5">Ensure elderly neighbors and children stay hydrated.</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                </div>
+
+              </div>
+            </div>
+
+            {/* 5. ASK NINOSHIELD AI & REPORT AN ISSUE */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               
-              {/* 1. WHAT YOU CAN DO NOW */}
-              <div className="lg:col-span-4 bg-white rounded-3xl p-5 border border-blue-100 shadow-xs space-y-3">
-                <div className="flex items-center space-x-2 border-b border-slate-100 pb-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <h3 className="font-extrabold text-sm text-[#0B1736]">What You Can Do Now</h3>
-                </div>
-
-                <div className="space-y-2 text-xs">
-                  <div onClick={() => handleAskAiSubmit("Water conservation tips")} className="p-3 rounded-2xl bg-blue-50/60 border border-blue-100 flex items-start justify-between cursor-pointer hover:bg-blue-100/60 transition">
-                    <div className="flex items-start space-x-2.5">
-                      <span className="text-base">💧</span>
-                      <div>
-                        <div className="font-bold text-[#0B1736]">Conserve Water</div>
-                        <p className="text-slate-500 text-[11px]">Reduce unnecessary water usage and keep essential drinking water available.</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 mt-1" />
-                  </div>
-
-                  <div onClick={() => handleAskAiSubmit("Avoid heat tips")} className="p-3 rounded-2xl bg-amber-50/60 border border-amber-100 flex items-start justify-between cursor-pointer hover:bg-amber-100/60 transition">
-                    <div className="flex items-start space-x-2.5">
-                      <span className="text-base">☀️</span>
-                      <div>
-                        <div className="font-bold text-[#0B1736]">Avoid Peak Afternoon Heat</div>
-                        <p className="text-slate-500 text-[11px]">Avoid unnecessary outdoor activity during the hottest part of the day.</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 mt-1" />
-                  </div>
-
-                  <div onClick={() => handleAskAiSubmit("Farming crop advice")} className="p-3 rounded-2xl bg-emerald-50/60 border border-emerald-100 flex items-start justify-between cursor-pointer hover:bg-emerald-100/60 transition">
-                    <div className="flex items-start space-x-2.5">
-                      <span className="text-base">🌾</span>
-                      <div>
-                        <div className="font-bold text-[#0B1736]">Follow Farming Advisory</div>
-                        <p className="text-slate-500 text-[11px]">Plan irrigation carefully and monitor crop health.</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 mt-1" />
-                  </div>
-
-                  <div onClick={() => handleAskAiSubmit("Support elderly and children in heat")} className="p-3 rounded-2xl bg-purple-50/60 border border-purple-100 flex items-start justify-between cursor-pointer hover:bg-purple-100/60 transition">
-                    <div className="flex items-start space-x-2.5">
-                      <span className="text-base">👥</span>
-                      <div>
-                        <div className="font-bold text-[#0B1736]">Check on Vulnerable People</div>
-                        <p className="text-slate-500 text-[11px]">Look after elderly people, children, and others affected by heat.</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 mt-1" />
-                  </div>
-                </div>
-              </div>
-
-              {/* 2. PREPARE YOURSELF CHECKLIST */}
-              <div className="lg:col-span-4 bg-white rounded-3xl p-5 border border-blue-100 shadow-xs space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckSquare className="w-4 h-4 text-emerald-600" />
-                    <h3 className="font-extrabold text-sm text-[#0B1736]">Prepare Yourself</h3>
-                  </div>
-                  <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                    {preparedCount} / {totalPreparedCount}
-                  </span>
-                </div>
-
-                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                  <div className="bg-emerald-500 h-full transition-all duration-500" style={{ width: `${(preparedCount/totalPreparedCount)*100}%` }}></div>
-                </div>
-
-                <div className="space-y-2 text-xs font-semibold pt-1">
-                  <label className="flex items-center space-x-3 p-2.5 rounded-2xl bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-                    <input
-                      type="checkbox"
-                      checked={peopleChecklist.water}
-                      onChange={() => togglePeopleChecklist('water')}
-                      className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
-                    />
-                    <span>Drinking water available</span>
-                  </label>
-
-                  <label className="flex items-center space-x-3 p-2.5 rounded-2xl bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-                    <input
-                      type="checkbox"
-                      checked={peopleChecklist.medicines}
-                      onChange={() => togglePeopleChecklist('medicines')}
-                      className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
-                    />
-                    <span>Important medicines ready</span>
-                  </label>
-
-                  <label className="flex items-center space-x-3 p-2.5 rounded-2xl bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-                    <input
-                      type="checkbox"
-                      checked={peopleChecklist.contacts}
-                      onChange={() => togglePeopleChecklist('contacts')}
-                      className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
-                    />
-                    <span>Emergency contacts saved</span>
-                  </label>
-
-                  <label className="flex items-center space-x-3 p-2.5 rounded-2xl bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-                    <input
-                      type="checkbox"
-                      checked={peopleChecklist.powerbank}
-                      onChange={() => togglePeopleChecklist('powerbank')}
-                      className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
-                    />
-                    <span>Power bank charged</span>
-                  </label>
-
-                  <label className="flex items-center space-x-3 p-2.5 rounded-2xl bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-                    <input
-                      type="checkbox"
-                      checked={peopleChecklist.info}
-                      onChange={() => togglePeopleChecklist('info')}
-                      className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
-                    />
-                    <span>Local emergency information saved</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* 3. ASK NINOSHIELD */}
-              <div className="lg:col-span-4 bg-white rounded-3xl p-5 border border-blue-100 shadow-xs flex flex-col justify-between space-y-3">
+              {/* ASK NINOSHIELD AI */}
+              <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs space-y-3 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <div className="flex items-center space-x-2">
-                      <Bot className="w-4 h-4 text-[#1769FF]" />
-                      <h3 className="font-extrabold text-sm text-[#0B1736]">Ask NinoShield</h3>
-                    </div>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-[#1769FF]">
-                      AI-assisted guidance
-                    </span>
+                  <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
+                    <Bot className="w-4 h-4 text-blue-600" />
+                    <h3 className="font-extrabold text-sm text-slate-900">ASK NINOSHIELD AI</h3>
                   </div>
-                  <p className="text-xs text-slate-500 pt-1">Get simple answers about your area.</p>
+                  <p className="text-xs text-slate-500 mt-2">Ask simple questions about your area's climate risk.</p>
 
-                  <div className="grid grid-cols-2 gap-2 text-[11px] pt-3">
-                    <button
-                      onClick={() => handleAskAiSubmit("Will it rain soon?")}
-                      className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-left font-semibold text-slate-700 hover:bg-blue-50 hover:border-blue-300 transition flex items-center justify-between"
-                    >
-                      <span>Will it rain soon?</span>
-                      <ChevronRight className="w-3 h-3 text-slate-400" />
+                  <div className="grid grid-cols-2 gap-2 text-[11px] pt-3 font-semibold">
+                    <button onClick={() => handleAskAiSubmit("Will it rain soon?")} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-left hover:bg-blue-50 transition cursor-pointer">
+                      Will it rain soon?
                     </button>
-
-                    <button
-                      onClick={() => handleAskAiSubmit("How is the heat?")}
-                      className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-left font-semibold text-slate-700 hover:bg-blue-50 hover:border-blue-300 transition flex items-center justify-between"
-                    >
-                      <span>How is the heat?</span>
-                      <ChevronRight className="w-3 h-3 text-slate-400" />
+                    <button onClick={() => handleAskAiSubmit("How is the heat today?")} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-left hover:bg-blue-50 transition cursor-pointer">
+                      How is the heat today?
                     </button>
-
-                    <button
-                      onClick={() => handleAskAiSubmit("Can I irrigate today?")}
-                      className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-left font-semibold text-slate-700 hover:bg-blue-50 hover:border-blue-300 transition flex items-center justify-between"
-                    >
-                      <span>Can I irrigate today?</span>
-                      <ChevronRight className="w-3 h-3 text-slate-400" />
+                    <button onClick={() => handleAskAiSubmit("Can I irrigate crops?")} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-left hover:bg-blue-50 transition cursor-pointer">
+                      Can I irrigate crops?
                     </button>
-
-                    <button
-                      onClick={() => handleAskAiSubmit("What should I do?")}
-                      className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-left font-semibold text-slate-700 hover:bg-blue-50 hover:border-blue-300 transition flex items-center justify-between"
-                    >
-                      <span>What should I do?</span>
-                      <ChevronRight className="w-3 h-3 text-slate-400" />
+                    <button onClick={() => handleAskAiSubmit("What should I do now?")} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-left hover:bg-blue-50 transition cursor-pointer">
+                      What should I do now?
                     </button>
                   </div>
                 </div>
 
                 <button
-                  onClick={() => handleAskAiSubmit("Climate recommendations")}
-                  className="w-full py-3 rounded-2xl bg-[#1769FF] text-white font-extrabold text-xs shadow-md shadow-blue-500/20 hover:bg-blue-700 transition"
+                  onClick={() => handleAskAiSubmit("General guidance")}
+                  className="w-full py-2.5 rounded-lg bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition cursor-pointer mt-3"
                 >
-                  Ask NinoShield →
+                  Ask NinoShield AI →
                 </button>
               </div>
 
-            </div>
-
-            {/* ROW 3: REPORT SOMETHING */}
-            <div className="bg-[#EBF3FF] rounded-3xl p-5 border border-blue-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#1769FF] text-white flex items-center justify-center shrink-0">
-                  <Megaphone className="w-5 h-5" />
-                </div>
+              {/* REPORT AN ISSUE */}
+              <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs space-y-3 flex flex-col justify-between">
                 <div>
-                  <h3 className="font-extrabold text-sm text-[#0B1736]">Report Something</h3>
-                  <p className="text-xs text-slate-600">Help improve local awareness by sharing what you see in your area.</p>
-                </div>
-              </div>
+                  <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
+                    <Camera className="w-4 h-4 text-blue-600" />
+                    <h3 className="font-extrabold text-sm text-slate-900">REPORT AN ISSUE</h3>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-2">Select what you observe in your local area to alert your community:</p>
 
-              <div className="flex flex-wrap items-center gap-2">
-                {['Water shortage', 'Extreme heat', 'Heavy rainfall', 'Crop problem', 'Flooding', 'Other'].map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => {
-                      setReportCategory(cat);
-                      setShowReportModal(true);
-                    }}
-                    className="px-3 py-1.5 rounded-full bg-white border border-blue-200 text-xs font-semibold text-slate-700 hover:bg-blue-50 transition"
-                  >
-                    {cat}
-                  </button>
-                ))}
+                  <div className="flex flex-wrap gap-2 pt-3">
+                    {['Water shortage', 'Extreme heat', 'Heavy rainfall', 'Crop problem', 'Flooding', 'Other'].map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => {
+                          setReportCategory(cat);
+                          navigate('/people/report');
+                        }}
+                        className="px-3 py-1.5 rounded-md bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:border-blue-200 transition cursor-pointer"
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
                 <button
-                  onClick={() => setShowReportModal(true)}
-                  className="flex items-center space-x-1.5 px-5 py-2 rounded-full bg-[#1769FF] text-white text-xs font-extrabold shadow-sm hover:bg-blue-700 transition"
+                  onClick={() => navigate('/people/report')}
+                  className="w-full py-2.5 rounded-lg bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition cursor-pointer mt-3"
                 >
-                  <Camera className="w-3.5 h-3.5" />
-                  <span>Report Now →</span>
+                  Report Observation →
                 </button>
               </div>
+
             </div>
 
-            <div className="text-center text-[11px] text-slate-400 font-medium">
-              ⓘ Predictions are based on current climate signals and are not an official forecast.
-            </div>
-          </>
+          </div>
         )}
 
       </main>
 
-      {/* LOCATION SELECTOR MODAL */}
-      {showLocationModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-blue-100 relative">
+      {/* DATA SOURCES EXPLANATION MODAL */}
+      {showSourceModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 space-y-4 shadow-xl border border-slate-200 relative text-xs">
             <button
-              onClick={() => setShowLocationModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-full bg-slate-100"
+              onClick={() => setShowSourceModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-md bg-slate-100 cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
 
-            <h3 className="text-lg font-black text-[#0B1736]">Select Demo Location</h3>
+            <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
+              <Info className="w-4 h-4 text-blue-600" />
+              <h3 className="text-base font-bold text-slate-900">How Risk Was Calculated</h3>
+            </div>
+
+            <p className="text-slate-600 font-medium">
+              NinoShield combines multi-sensor observations to calculate risk levels without complex terminology:
+            </p>
+
+            <ul className="space-y-2 text-slate-700 font-medium list-disc list-inside">
+              <li>El Niño Pacific ocean surface temperature anomaly data</li>
+              <li>Local thermal observation departure ({selectedLocation.anomalies.tempAnomaly})</li>
+              <li>Monsoon rainfall deficit telemetry ({selectedLocation.anomalies.rainAnomaly})</li>
+              <li>Reservoir &amp; groundwater storage levels ({selectedLocation.anomalies.waterAvailability})</li>
+              <li>Crowdsourced citizen reports submitted in {selectedLocation.name}</li>
+            </ul>
+
+            <button
+              onClick={() => setShowSourceModal(false)}
+              className="w-full py-2 bg-blue-600 text-white font-bold rounded-lg cursor-pointer"
+            >
+              Close Explanation
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* LOCATION SELECTOR MODAL */}
+      {showLocationModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 space-y-4 shadow-xl border border-slate-200 relative">
+            <button
+              onClick={() => setShowLocationModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-md bg-slate-100 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <h3 className="text-base font-bold text-slate-900">Select Location</h3>
             <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
               {locations.map(loc => (
                 <div
@@ -758,13 +648,13 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
                     changeLocation(loc.id);
                     setShowLocationModal(false);
                   }}
-                  className={`p-3 rounded-2xl border cursor-pointer flex items-center justify-between transition ${selectedLocation.id === loc.id ? 'bg-blue-50 border-[#1769FF]' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}`}
+                  className={`p-3 rounded-lg border cursor-pointer flex items-center justify-between transition ${selectedLocation.id === loc.id ? 'bg-blue-50 border-blue-600' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}`}
                 >
                   <div>
-                    <div className="font-bold text-xs text-[#0B1736]">{loc.name}</div>
+                    <div className="font-bold text-xs text-slate-900">{loc.name}</div>
                     <div className="text-[11px] text-slate-500">{loc.district}</div>
                   </div>
-                  <span className={`text-xs font-black px-2 py-0.5 rounded ${loc.overallRisk >= 75 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'}`}>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${loc.overallRisk >= 75 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'}`}>
                     Risk: {loc.overallRisk}
                   </span>
                 </div>
@@ -774,42 +664,41 @@ export default function PeopleDashboard({ onNavigateLanding, onSwitchFarmerMode 
         </div>
       )}
 
-      {/* AI GUIDANCE MODAL */}
+      {/* AI ADVISOR MODAL */}
       {showAiModal && aiAnalysis && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-blue-100 relative text-xs">
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 space-y-4 shadow-xl border border-slate-200 relative text-xs">
             <button
               onClick={() => setShowAiModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-full bg-slate-100"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-md bg-slate-100 cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center space-x-2">
-              <Bot className="w-5 h-5 text-[#1769FF]" />
-              <h3 className="text-lg font-black text-[#0B1736]">NinoShield AI Guidance</h3>
+            <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
+              <Bot className="w-4 h-4 text-blue-600" />
+              <h3 className="text-base font-bold text-slate-900">NinoShield AI Guidance</h3>
             </div>
 
-            <p className="text-slate-600 font-medium">{aiAnalysis.summary}</p>
+            <p className="text-slate-700 font-medium">{aiAnalysis.summary}</p>
 
-            <div className="space-y-2 pt-1">
+            <div className="space-y-2">
               {aiAnalysis.recommendations.map((rec, i) => (
-                <div key={i} className="p-3 bg-blue-50 rounded-2xl border border-blue-100 space-y-1">
-                  <div className="font-bold text-[#0B1736] flex items-center justify-between">
+                <div key={i} className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
+                  <div className="font-bold text-slate-900 flex items-center justify-between">
                     <span>{rec.category}</span>
-                    <span className="px-2 py-0.5 rounded text-[10px] bg-red-100 text-red-700 font-bold">{rec.priority}</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] bg-blue-100 text-blue-800 font-bold">{rec.priority}</span>
                   </div>
-                  <p className="text-slate-800 font-semibold">{rec.action}</p>
-                  <p className="text-slate-500 text-[11px]">{rec.reason}</p>
+                  <p className="text-slate-800 font-medium">{rec.action}</p>
                 </div>
               ))}
             </div>
 
             <button
               onClick={() => setShowAiModal(false)}
-              className="w-full py-2.5 bg-[#1769FF] text-white font-bold rounded-xl"
+              className="w-full py-2 bg-blue-600 text-white font-bold rounded-lg cursor-pointer"
             >
-              Got it
+              Close Guidance
             </button>
           </div>
         </div>

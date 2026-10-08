@@ -2,210 +2,190 @@ import React, { useState } from 'react';
 import { 
   ArrowRight, 
   Play, 
-  Thermometer, 
+  User, 
   Users, 
-  Landmark, 
+  Building2, 
   X, 
   Sparkles, 
-  ShieldCheck 
+  ShieldCheck,
+  Activity,
+  Radio,
+  Bell,
+  Cpu
 } from 'lucide-react';
+import { useNinoShield } from '../../context/NinoShieldContext';
 
 export default function LandingHero({ onExplore, onWatchDemo, onGetStarted }) {
+  const { lang, navigate } = useNinoShield();
   const [showDemoModal, setShowDemoModal] = useState(false);
 
   return (
-    <div className="relative min-h-[calc(100vh-70px)] bg-[#F7FAFF] text-[#0B1736] flex flex-col justify-between overflow-hidden">
+    <div className="relative min-h-[calc(100vh-68px)] bg-slate-50 text-slate-900 flex flex-col justify-between overflow-hidden">
       
-      {/* Background Subtle Gradient Blobs & Atmospheric Clouds */}
-      <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-br from-blue-100/40 via-sky-50/60 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute top-1/3 left-0 w-[400px] h-[400px] bg-teal-50/50 rounded-full blur-3xl pointer-events-none -z-10" />
+      {/* Subtle Background Elements */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-100/40 rounded-full blur-3xl pointer-events-none -z-10" />
 
-      {/* Main First Viewport Container */}
-      <div className="max-w-7xl w-full mx-auto px-6 lg:px-12 pt-6 lg:pt-10 pb-10 flex-1 flex flex-col justify-between">
+      {/* Main Container */}
+      <div className="max-w-7xl w-full mx-auto px-6 lg:px-12 pt-8 lg:pt-12 pb-12 flex-1 flex flex-col justify-between">
         
         {/* TWO-COLUMN HERO SECTION */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
-          {/* LEFT HERO: ~46% width (5.5 cols on lg) */}
+          {/* LEFT HERO: Title, Subtitle, CTAs */}
           <div className="lg:col-span-6 space-y-6 text-left">
             
-            {/* EYEBROW */}
-            <div className="flex items-center space-x-3">
-              <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-[#64748B]">
-                AI FOR A SAFER TOMORROW
-              </span>
-              <div className="h-[1.5px] w-10 bg-[#1769FF]" />
+            {/* BRANDING EYEBROW */}
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold tracking-wide">
+              <span className="w-2 h-2 rounded-full bg-blue-600" />
+              <span>NINOSHIELD CLIMATE INTELLIGENCE</span>
             </div>
 
             {/* MAIN TITLE */}
-            <h1 className="text-5xl sm:text-6xl lg:text-[66px] font-extrabold tracking-tight leading-[1.02] text-[#0B1736]">
-              Detect Climate<br />
-              Risks Early.<br />
-              <span className="text-gradient-title">
-                Act Before Disaster.
-              </span>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-slate-900">
+              DETECT. PREPARE. ACT.
             </h1>
 
-            {/* DESCRIPTION */}
-            <p className="text-base sm:text-[19px] text-[#475569] max-w-[580px] font-normal leading-[1.6]">
-              NinoShield uses AI to identify El Niño–related climate risks and help people, communities and decision-makers take early action.
+            {/* SUBTITLE */}
+            <p className="text-lg sm:text-xl text-slate-600 max-w-[560px] font-medium leading-relaxed">
+              AI-powered early action for El Niño-driven climate risks.
             </p>
 
             {/* BUTTONS */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
-              
-              {/* PRIMARY BUTTON */}
               <button
-                onClick={onExplore}
-                className="px-7 py-3.5 rounded-full btn-gradient-primary text-white font-semibold text-sm sm:text-base shadow-lg shadow-[#1769FF]/25 hover:shadow-xl hover:shadow-[#1769FF]/35 transition-all transform hover:-translate-y-0.5 flex items-center space-x-2.5 cursor-pointer"
+                onClick={onGetStarted || (() => navigate('/people'))}
+                className="px-6 py-3.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xs transition-all flex items-center space-x-2 cursor-pointer"
               >
-                <span>Explore Now</span>
-                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                <span>Explore NinoShield</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
 
-              {/* SECONDARY BUTTON */}
               <button
-                onClick={() => setShowDemoModal(true)}
-                className="px-7 py-3.5 rounded-full bg-white text-[#0B1736] font-semibold text-sm sm:text-base border border-slate-200 shadow-sm hover:bg-slate-50 transition-all transform hover:-translate-y-0.5 flex items-center space-x-2.5 cursor-pointer"
+                onClick={onExplore || (() => navigate('/three-levels'))}
+                className="px-6 py-3.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 font-bold text-sm border border-slate-200 shadow-xs transition-all flex items-center space-x-2 cursor-pointer"
               >
-                <div className="w-6 h-6 rounded-full bg-[#0B1736] text-white flex items-center justify-center pl-0.5">
-                  <Play className="w-2.5 h-2.5 fill-current" />
-                </div>
-                <span>Watch Demo</span>
+                <span>See How It Works</span>
               </button>
-
             </div>
 
           </div>
 
-          {/* RIGHT HERO — EARTH VISUAL: ~54% width (6.5 cols on lg) */}
+          {/* RIGHT HERO — EARTH VISUAL */}
           <div className="lg:col-span-6 relative flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[620px] aspect-square flex items-center justify-center">
-              
-              {/* Realistic Satellite Earth Image */}
+            <div className="relative w-full max-w-[500px] aspect-square flex items-center justify-center">
               <img
                 src="/earth_el_nino_globe.jpg"
-                alt="Realistic Satellite Earth showing Asia, Australia and Pacific El Niño Heatmap"
-                className="w-full h-full object-contain drop-shadow-2xl rounded-full"
+                alt="Satellite Earth showing El Niño Climate Signals"
+                className="w-full h-full object-contain drop-shadow-xl rounded-full"
               />
 
-              {/* FLOATING EL NIÑO BADGE */}
-              <div className="absolute top-[46%] right-[16%] z-20 flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#881337]/90 text-white text-[11px] font-extrabold tracking-widest uppercase shadow-2xl border border-red-400/40 backdrop-blur-md">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-                <span>EL NIÑO</span>
+              {/* Minimal Clean Indicator Badge */}
+              <div className="absolute bottom-6 left-6 z-20 flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-900/90 text-white text-xs font-semibold backdrop-blur-xs border border-slate-700">
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                <span>Active El Niño Signal Monitoring</span>
               </div>
-
-              {/* CONCENTRIC RADAR RINGS */}
-              <div className="absolute top-[40%] right-[12%] w-40 h-40 rounded-full border border-red-500/40 animate-ping pointer-events-none" />
-              <div className="absolute top-[43%] right-[14%] w-32 h-32 rounded-full border border-amber-400/30 pointer-events-none" />
-
             </div>
           </div>
 
         </div>
 
-        {/* FEATURE CARDS (EXACTLY THREE CARDS IN A ROW AT BOTTOM OF HERO) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 lg:mt-12">
+        {/* PRODUCT LOOP BAR */}
+        <div className="my-10 bg-white rounded-xl border border-slate-200 p-4 shadow-xs">
+          <div className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
+            Product Philosophy Loop
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs font-bold text-slate-700">
+            <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-slate-50 border border-slate-100">
+              <Activity className="w-3.5 h-3.5 text-blue-600" />
+              <span>Climate Signals</span>
+            </div>
+            <span className="text-slate-300 font-normal">→</span>
+
+            <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-blue-50 border border-blue-100 text-blue-800">
+              <Cpu className="w-3.5 h-3.5 text-blue-600" />
+              <span>AI Risk Detection</span>
+            </div>
+            <span className="text-slate-300 font-normal">→</span>
+
+            <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-slate-50 border border-slate-100">
+              <Radio className="w-3.5 h-3.5 text-cyan-600" />
+              <span>Local Community Signals</span>
+            </div>
+            <span className="text-slate-300 font-normal">→</span>
+
+            <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-amber-50 border border-amber-100 text-amber-800">
+              <Bell className="w-3.5 h-3.5 text-amber-600" />
+              <span>Early Warning</span>
+            </div>
+            <span className="text-slate-300 font-normal">→</span>
+
+            <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-emerald-50 border border-emerald-100 text-emerald-800">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Early Action</span>
+            </div>
+          </div>
+        </div>
+
+        {/* THREE USER GROUPS CARDS */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           
-          {/* CARD 1 */}
-          <div className="rounded-2xl bg-white border border-blue-100/70 p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex items-start space-x-4">
-            <div className="p-3.5 rounded-full bg-red-50 text-[#FF4B45] shrink-0">
-              <Thermometer className="w-6 h-6 stroke-[2.2]" />
+          {/* USER GROUP 1: PEOPLE */}
+          <div 
+            onClick={() => navigate('/people')}
+            className="rounded-xl bg-white border border-slate-200 p-6 shadow-xs hover:border-blue-400 hover:shadow-sm transition-all cursor-pointer group"
+          >
+            <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition">
+              <User className="w-5 h-5" />
             </div>
-            <div>
-              <h3 className="text-base font-bold text-[#0B1736] mb-1">Understand Risk</h3>
-              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-normal">
-                Know climate risks in your area in simple terms.
-              </p>
-            </div>
-          </div>
-
-          {/* CARD 2 */}
-          <div className="rounded-2xl bg-white border border-blue-100/70 p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex items-start space-x-4">
-            <div className="p-3.5 rounded-full bg-blue-50 text-[#1769FF] shrink-0">
-              <Users className="w-6 h-6 stroke-[2.2]" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-[#0B1736] mb-1">Take Early Action</h3>
-              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-normal">
-                Get AI-driven recommendations for people and communities.
-              </p>
+            <h3 className="text-base font-bold text-slate-900 mb-1">PEOPLE</h3>
+            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+              Understand your risk.
+            </p>
+            <div className="mt-4 flex items-center space-x-1 text-xs font-bold text-blue-600 group-hover:underline">
+              <span>Explore Person Portal</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
-          {/* CARD 3 */}
-          <div className="rounded-2xl bg-white border border-blue-100/70 p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex items-start space-x-4">
-            <div className="p-3.5 rounded-full bg-emerald-50 text-[#16A878] shrink-0">
-              <Landmark className="w-6 h-6 stroke-[2.2]" />
+          {/* USER GROUP 2: COMMUNITIES */}
+          <div 
+            onClick={() => navigate('/community')}
+            className="rounded-xl bg-white border border-slate-200 p-6 shadow-xs hover:border-blue-400 hover:shadow-sm transition-all cursor-pointer group"
+          >
+            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition">
+              <Users className="w-5 h-5" />
             </div>
-            <div>
-              <h3 className="text-base font-bold text-[#0B1736] mb-1">Support Decision-Makers</h3>
-              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-normal">
-                View high-risk areas and plan responses before disasters.
-              </p>
+            <h3 className="text-base font-bold text-slate-900 mb-1">COMMUNITIES</h3>
+            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+              Prepare together.
+            </p>
+            <div className="mt-4 flex items-center space-x-1 text-xs font-bold text-emerald-600 group-hover:underline">
+              <span>Explore Community Portal</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </div>
+
+          {/* USER GROUP 3: DECISION-MAKERS */}
+          <div 
+            onClick={() => navigate('/decision-maker')}
+            className="rounded-xl bg-white border border-slate-200 p-6 shadow-xs hover:border-blue-400 hover:shadow-sm transition-all cursor-pointer group"
+          >
+            <div className="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition">
+              <Building2 className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900 mb-1">DECISION-MAKERS</h3>
+            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+              Act where it matters most.
+            </p>
+            <div className="mt-4 flex items-center space-x-1 text-xs font-bold text-purple-600 group-hover:underline">
+              <span>Explore Decision-Maker Portal</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
         </div>
 
       </div>
-
-      {/* WATCH DEMO MODAL */}
-      {showDemoModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-5 shadow-2xl relative text-left border border-slate-100">
-            
-            <button
-              onClick={() => setShowDemoModal(false)}
-              className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex items-center space-x-3 text-[#1769FF]">
-              <div className="p-2.5 rounded-2xl bg-blue-50">
-                <Sparkles className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-[#0B1736]">NinoShield Early Action Demo</h3>
-            </div>
-
-            <p className="text-sm text-slate-600 leading-relaxed">
-              "NinoShield converts climate signals into localized risk insights and early-action recommendations."
-            </p>
-
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs text-slate-700">
-              <div className="flex items-center space-x-2 font-bold text-[#0B1736]">
-                <ShieldCheck className="w-4 h-4 text-[#16A878]" />
-                <span>Live Interactive Prototype Capabilities</span>
-              </div>
-              <ul className="space-y-1.5 pl-6 list-disc text-slate-600">
-                <li>Real-time El Niño Pacific anomaly risk calculation</li>
-                <li>District-level interactive risk map &amp; impact cascade</li>
-                <li>AI Priority Action Engine &amp; What-If Scenario Simulator</li>
-              </ul>
-            </div>
-
-            <div className="flex justify-end space-x-3 pt-2">
-              <button
-                onClick={() => setShowDemoModal(false)}
-                className="px-5 py-2.5 rounded-full text-xs font-semibold text-slate-600 hover:bg-slate-100"
-              >
-                Close
-              </button>
-              <button
-                onClick={() => {
-                  setShowDemoModal(false);
-                  onWatchDemo();
-                }}
-                className="px-6 py-2.5 rounded-full btn-gradient-primary text-white text-xs font-semibold shadow-md"
-              >
-                Launch Live Demo Pitch Mode
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
 
     </div>
   );

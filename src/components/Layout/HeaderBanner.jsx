@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNinoShield } from '../../context/NinoShieldContext';
-import { MapPin, Globe, Calendar, User, ChevronDown, Plus } from 'lucide-react';
+import { MapPin, Calendar, User, ChevronDown, Plus, Shield } from 'lucide-react';
 
 export default function HeaderBanner({
   title,
@@ -8,85 +8,92 @@ export default function HeaderBanner({
   mode = 'people',
   onOpenLocationModal
 }) {
-  const { lang, toggleLanguage, selectedLocation } = useNinoShield();
+  const { lang, toggleLanguage, selectedLocation, t } = useNinoShield();
+
+  // Dynamic Date Formatting
+  const today = new Date();
+  const dateFormatted = today.toLocaleDateString(lang === 'ta' ? 'ta-IN' : 'en-US', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+  const dayName = today.toLocaleDateString(lang === 'ta' ? 'ta-IN' : 'en-US', {
+    weekday: 'long'
+  });
 
   return (
-    <div className="relative w-full rounded-3xl overflow-hidden bg-gradient-to-r from-blue-900/10 via-sky-50 to-[#EBF3FF] p-6 border border-blue-100 shadow-xs mb-6">
+    <div className="relative w-full rounded-2xl bg-white p-5 lg:p-6 border border-slate-200 shadow-xs mb-6">
       
-      {/* Background Landscape / Temple Graphic */}
-      <div 
-        className="absolute inset-0 bg-cover bg-right-top opacity-20 pointer-events-none mix-blend-multiply"
-        style={{ backgroundImage: `url('/madurai_header_bg.jpg')` }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#F8FBFF] via-[#F8FBFF]/90 to-transparent pointer-events-none" />
+      {/* Background Subtle Accent */}
+      <div className="absolute top-0 right-0 w-72 h-full bg-gradient-to-l from-blue-50/50 to-transparent rounded-r-2xl pointer-events-none" />
 
       <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         
         {/* Left Title & Location */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-[#0B1736]">
-              {title || "Good morning!"}
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+              {title || (lang === 'ta' ? 'வணக்கம்!' : 'Good morning!')}
             </h1>
 
             {/* Location Selector Pill */}
             <div className="flex items-center space-x-2">
               <button
                 onClick={onOpenLocationModal}
-                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-white border border-blue-200 text-xs font-bold text-[#0B1736] shadow-xs hover:bg-blue-50 transition"
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 hover:bg-slate-100 transition cursor-pointer"
               >
-                <MapPin className="w-3.5 h-3.5 text-[#1769FF]" />
+                <MapPin className="w-3.5 h-3.5 text-blue-600" />
                 <span>{selectedLocation.name}, Tamil Nadu</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
 
               <button
                 onClick={onOpenLocationModal}
-                className="flex items-center space-x-1 px-3 py-1.5 rounded-full bg-blue-50 text-[#1769FF] border border-blue-200 text-xs font-bold hover:bg-blue-100 transition"
+                className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 text-xs font-semibold hover:bg-blue-100 transition cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>{mode === 'decision-maker' ? 'Change Region' : 'Change Location'}</span>
+                <span>{mode === 'decision-maker' ? (t.changeRegion || 'Change Region') : (t.changeLocation || 'Change Location')}</span>
               </button>
             </div>
           </div>
 
-          <p className="text-sm font-medium text-slate-600">
+          <p className="text-xs sm:text-sm text-slate-600 font-medium">
             {subtitle}
           </p>
         </div>
 
-        {/* Right Language, User Profile & Date Card */}
+        {/* Right Controls: Language Toggle & Dynamic Date Card */}
         <div className="flex items-center space-x-3">
           
-          {/* Language Toggle */}
-          <div className="flex items-center bg-white p-1 rounded-full border border-slate-200 shadow-xs text-xs font-bold">
+          {/* True Language Toggle */}
+          <div className="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-semibold">
             <button
               onClick={() => lang !== 'en' && toggleLanguage()}
-              className={`px-3 py-1 rounded-full transition ${lang === 'en' ? 'bg-[#1769FF] text-white' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-3 py-1 rounded-md transition cursor-pointer ${lang === 'en' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
             >
               English
             </button>
             <button
               onClick={() => lang !== 'ta' && toggleLanguage()}
-              className={`px-3 py-1 rounded-full transition ${lang === 'ta' ? 'bg-[#1769FF] text-white' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-3 py-1 rounded-md transition cursor-pointer ${lang === 'ta' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
             >
               தமிழ்
             </button>
           </div>
 
-          {/* User Icon Circle */}
-          <div className="w-9 h-9 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-700 shadow-xs cursor-pointer hover:bg-slate-50">
+          {/* User Badge */}
+          <div className="w-9 h-9 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 shadow-xs">
             <User className="w-4 h-4" />
           </div>
 
-          {/* Date Card */}
-          <div className="bg-white rounded-2xl p-2.5 px-4 border border-blue-100 shadow-xs flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#1769FF] flex items-center justify-center font-bold">
+          {/* Dynamic Date Card */}
+          <div className="bg-slate-50 rounded-lg p-2 px-3 border border-slate-200 shadow-xs flex items-center space-x-2.5">
+            <div className="w-7 h-7 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center">
               <Calendar className="w-4 h-4" />
             </div>
             <div className="text-left">
-              <div className="text-xs font-black text-[#0B1736]">1 Oct 2026</div>
-              <div className="text-[10px] text-slate-400 font-bold uppercase">Thursday</div>
+              <div className="text-xs font-bold text-slate-900">{dateFormatted}</div>
+              <div className="text-[10px] text-slate-500 font-medium capitalize">{dayName}</div>
             </div>
           </div>
 
