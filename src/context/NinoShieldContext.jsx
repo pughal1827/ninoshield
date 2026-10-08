@@ -191,6 +191,67 @@ export function NinoShieldProvider({ children }) {
     localStorage.setItem('ninoshield_community_location_confirmed', 'true');
   };
 
+  // 2D. DECISION-MAKER PORTAL AUTHENTICATION STATE & LOGOUT
+  const [decisionMakerAuth, setDecisionMakerAuth] = useState(() => {
+    const saved = localStorage.getItem('ninoshield_decision_maker_auth');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
+
+  const [decisionMakerRegionConfirmed, setDecisionMakerRegionConfirmed] = useState(() => {
+    return localStorage.getItem('ninoshield_decision_maker_region_confirmed') === 'true';
+  });
+
+  const loginDecisionMaker = (emailOrPhone, password, rememberMe = true) => {
+    const user = {
+      name: emailOrPhone.toLowerCase().includes('demo') ? 'District Collector / Administrator' : 'Pughal (Admin)',
+      email: emailOrPhone,
+      dept: 'Madurai District Administration',
+      role: 'Decision-Maker / Administrator',
+      avatar: null
+    };
+
+    const authData = { user, authenticated: true, loginTime: new Date().toISOString() };
+    setDecisionMakerAuth(authData);
+
+    if (rememberMe) {
+      localStorage.setItem('ninoshield_decision_maker_auth', JSON.stringify(authData));
+    }
+    return { success: true, user };
+  };
+
+  const registerDecisionMaker = ({ fullName, email, org, role, password }) => {
+    const user = {
+      name: fullName || 'District Official',
+      email: email || 'demo.admin@ninoshield.ai',
+      dept: org || 'Madurai District Administration',
+      role: role || 'Decision-Maker'
+    };
+
+    const authData = { user, authenticated: true, loginTime: new Date().toISOString() };
+    setDecisionMakerAuth(authData);
+    localStorage.setItem('ninoshield_decision_maker_auth', JSON.stringify(authData));
+    return { success: true, user };
+  };
+
+  const logoutDecisionMaker = () => {
+    setDecisionMakerAuth(null);
+    localStorage.removeItem('ninoshield_decision_maker_auth');
+    navigate('/decision-maker/login');
+  };
+
+  const confirmDecisionMakerRegion = (locationId) => {
+    if (locationId) changeLocation(locationId);
+    setDecisionMakerRegionConfirmed(true);
+    localStorage.setItem('ninoshield_decision_maker_region_confirmed', 'true');
+  };
+
   // 3. ROUTING & BROWSER URL SYNC
   const getPathFromHash = () => {
     const hash = window.location.hash.replace('#', '');
@@ -442,6 +503,12 @@ export function NinoShieldProvider({ children }) {
       registerCommunity,
       logoutCommunity,
       confirmCommunityLocation,
+      decisionMakerAuth,
+      decisionMakerRegionConfirmed,
+      loginDecisionMaker,
+      registerDecisionMaker,
+      logoutDecisionMaker,
+      confirmDecisionMakerRegion,
       currentRoute,
       navigate,
       peopleChecklist,

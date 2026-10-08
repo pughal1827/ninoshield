@@ -10,6 +10,9 @@ import CommunityLogin from './components/Community/CommunityLogin';
 import CommunityRegister from './components/Community/CommunityRegister';
 import CommunityLocationSetup from './components/Community/CommunityLocationSetup';
 import DecisionMakerDashboard from './components/Authority/DecisionMakerDashboard';
+import DecisionMakerLogin from './components/Authority/DecisionMakerLogin';
+import DecisionMakerRegister from './components/Authority/DecisionMakerRegister';
+import DecisionMakerRegionSetup from './components/Authority/DecisionMakerRegionSetup';
 import CommandCenter from './components/Dashboard/CommandCenter';
 import RiskMap from './components/Dashboard/RiskMap';
 import LocationProfile from './components/RiskAnalysis/LocationProfile';
@@ -24,7 +27,16 @@ import GuidedDemoBanner from './components/Demo/GuidedDemoBanner';
 import { calculateRiskScore } from './data/climateData';
 
 function AppContent() {
-  const { currentRoute, navigate, selectedLocation, changeLocation, communityAuth, communityLocationConfirmed } = useNinoShield();
+  const { 
+    currentRoute, 
+    navigate, 
+    selectedLocation, 
+    changeLocation, 
+    communityAuth, 
+    communityLocationConfirmed,
+    decisionMakerAuth,
+    decisionMakerRegionConfirmed
+  } = useNinoShield();
   
   const [activeNav, setActiveNav] = useState('home'); 
   const [activeView, setActiveView] = useState('dashboard');
@@ -150,12 +162,21 @@ function AppContent() {
         )
       )}
 
+      {/* PROTECTED DECISION-MAKER PORTAL ROUTING */}
       {isDecisionMakerRoute && (
-        <DecisionMakerDashboard
-          onNavigateLanding={() => navigate('/')}
-          onSwitchCommunityMode={() => navigate('/community')}
-          onSwitchPersonMode={() => navigate('/people')}
-        />
+        !decisionMakerAuth ? (
+          currentRoute === '/decision-maker/register' ? (
+            <DecisionMakerRegister />
+          ) : (
+            <DecisionMakerLogin />
+          )
+        ) : !decisionMakerRegionConfirmed ? (
+          <DecisionMakerRegionSetup />
+        ) : (
+          <DecisionMakerDashboard
+            onNavigateLanding={() => navigate('/')}
+          />
+        )
       )}
 
       {isDashboardRoute && (

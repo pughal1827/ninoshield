@@ -32,7 +32,8 @@ import {
   ArrowRight,
   HelpCircle,
   Zap,
-  Info
+  Info,
+  LogOut
 } from 'lucide-react';
 import {
   LineChart,
@@ -45,9 +46,7 @@ import {
 } from 'recharts';
 
 export default function DecisionMakerDashboard({
-  onNavigateLanding,
-  onSwitchCommunityMode,
-  onSwitchPersonMode
+  onNavigateLanding
 }) {
   const {
     lang,
@@ -63,7 +62,9 @@ export default function DecisionMakerDashboard({
     departmentCoordination,
     resources,
     updateResource,
-    generateAiRecommendation
+    generateAiRecommendation,
+    decisionMakerAuth,
+    logoutDecisionMaker
   } = useNinoShield();
 
   // Modals & State
@@ -72,6 +73,9 @@ export default function DecisionMakerDashboard({
   const [aiResponse, setAiResponse] = useState(null);
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [showPlanModal, setShowPlanModal] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
+  const userName = decisionMakerAuth?.user?.name || 'Pughal (Admin)';
 
   // Sub-page route matching
   const isRiskPage = currentRoute === '/decision-maker/risk';
@@ -192,17 +196,10 @@ export default function DecisionMakerDashboard({
 
         </div>
 
-        {/* Bottom Switch Mode Button */}
-        <button
-          onClick={onSwitchCommunityMode}
-          className="w-full flex items-center justify-between p-3 rounded-lg bg-purple-50 border border-purple-200 text-xs font-semibold text-purple-800 hover:bg-purple-100 transition cursor-pointer"
-        >
-          <div className="flex items-center space-x-2">
-            <Users className="w-4 h-4 text-purple-600" />
-            <span>Switch to Community Mode</span>
-          </div>
-          <ChevronRight className="w-4 h-4" />
-        </button>
+        {/* Clean Sidebar Footer */}
+        <div className="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center font-medium">
+          NinoShield Decision-Maker Portal
+        </div>
       </aside>
 
       {/* 2. MAIN VIEW AREA */}
